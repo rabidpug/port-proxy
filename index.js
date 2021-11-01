@@ -42,5 +42,5 @@ server.on("upgrade", (req, socket, head) => {
 	}, (e) => console.error(e));
 });
 
-server.listen(9999, 'localhost', () => console.log('Proxy server listening on 9999'));
+server.listen(9999, '0.0.0.0', () => console.log('Proxy server listening on 9999'));
 server.on('error', (e) => console.error(e));
