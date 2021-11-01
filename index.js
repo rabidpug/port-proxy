@@ -4,17 +4,22 @@ import httpProxy from 'http-proxy';
 
 const proxy = httpProxy.createProxyServer();
 
+const router = express();
+
+const server = createServer(router);
+
+
 function getPort(req) {
 
 	const host = req.headers.host || "";
-	const idx = host.indexOf(":");
-	const domain = idx !== -1 ? host.substring(0, idx) : host;
+	const index = host.indexOf(":");
+	const domain = index !== -1 ? host.substring(0, index) : host;
 	const parts = domain.split(".");
 
 	return parts.shift();
 }
-const webRouter = express();
-webRouter.all('*', (req, res, next) => {
+
+router.all('*', (req, res, next) => {
 	const port = getPort(req);
 	if (!port) return next();
 	console.log(`Proxying web ${port}`);
@@ -23,10 +28,6 @@ webRouter.all('*', (req, res, next) => {
 		target: `http://0.0.0.0:${port}${req.originalUrl || ''}`,
 	}, (e) => console.error(e));
 });
-
-const server = createServer(webRouter);
-server.listen(9999,'localhost',() => console.log('Proxy server listening on 9999'));
-server.on('error', (e) => console.error(e));
 
 server.on("upgrade", (req, socket, head) => {
 	socket.pause();
@@ -38,3 +39,6 @@ server.on("upgrade", (req, socket, head) => {
 		target: `http://0.0.0.0:${port}${req.originalUrl || ''}`,
 	}, (e) => console.error(e));
 });
+
+server.listen(9999, 'localhost', () => console.log('Proxy server listening on 9999'));
+server.on('error', (e) => console.error(e));
