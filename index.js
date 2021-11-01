@@ -20,6 +20,7 @@ function getPort(req) {
 }
 
 router.all('*', (req, res, next) => {
+	console.log(req.headers);
 	const port = getPort(req);
 	if (!port) return next();
 	console.log(`Proxying web ${port}`);
@@ -30,6 +31,7 @@ router.all('*', (req, res, next) => {
 });
 
 server.on("upgrade", (req, socket, head) => {
+	console.log(req.headers);
 	socket.pause();
 	const port = getPort(req);
 	if (!port) return socket.end("HTTP/1.1 404 Not Found\r\n\r\n");
